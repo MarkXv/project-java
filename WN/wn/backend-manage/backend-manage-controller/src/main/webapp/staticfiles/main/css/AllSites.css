@@ -1,0 +1,45 @@
+@charset utf-8;
+body {
+	background-color: rgb(245, 245, 245);
+}
+#conditions {
+	width: 100%;
+}
+#conditions h6 {
+	background-color: #4295db;
+	color: white;
+	width: 100px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+}
+#conditions h6,#conditions ul{
+	display: inline-block;
+	font-size: 15px;
+	margin-bottom: 10px;
+}
+
+.conditionsUL li {
+	display: inline-block;
+	width: 100px;
+	height: 20px;
+	/*background-color: red;*/
+	font-size: 15px;
+}
+.conditionsUL li a:hover {
+	text-decoration: none;
+}
+
+/*重写input-group*/
+.input-group {
+	width:70%;
+}
+
+#serchBut {
+	display: block;
+	width:100%;
+}
+
+.serchButA {
+	text-decoration: none;
+}

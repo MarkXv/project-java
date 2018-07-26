@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wn.backend.manage.mapper.RoleMapper">
+
+    <select id="findAllRole" resultType="Role">
+        select * from role_p
+
+    </select>
+
+    <insert id="saveRole">
+        insert into role_p values(
+            #{roleId},
+            #{name,jdbcType=VARCHAR},
+            #{orderNo,jdbcType=INTEGER},
+            #{remark,jdbcType=VARCHAR},
+            #{createBy,jdbcType=VARCHAR},
+			#{createTime,jdbcType=DATE},
+			#{updateBy,jdbcType=VARCHAR},
+			#{updateTime,jdbcType=DATE}
+        )
+    </insert>
+
+    <delete id="deleteRole">
+        delete from role_p where role_id in (
+        <foreach collection="roleIds" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+
+    </delete>
+
+    <select id="findByRoleId" resultType="Role">
+        select * from role_p where role_id=#{roleId}
+    </select>
+
+    <update id="updateRole">
+        update role_p
+        <set>
+            <if test="name!=null">name=#{name},</if>
+            <if test="orderNo!=null">order_no=#{orderNo},</if>
+            <if test="remark!=null">remark=#{remark},</if>
+            <if test="createTime!=null">create_time=#{createTime},</if>
+            <if test="createBy!=null">create_by=#{createBy},</if>
+            <if test="updateTime!=null">update_time=#{updateTime},</if>
+            <if test="updateBy!=null">update_by=#{updateBy},</if>
+        </set>
+        where role_id=#{roleId}
+
+    </update>
+
+    <select id="findRoleModuleById" resultType="String">
+        select module_id from role_module_p where role_id=#{roleId}
+
+    </select>
+
+    <delete id="deleteModule">
+        delete from role_module_p where role_id = #{roleId}
+
+    </delete>
+
+    <insert id="saveRoleModule">
+        insert into role_module_p values (
+
+            #{roleId},
+            #{moduleId}
+
+        )
+
+    </insert>
+
+</mapper>

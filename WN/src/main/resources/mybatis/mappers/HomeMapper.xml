@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tedu.springBoot.mapper.HomeMapper">
+    <!--配置别名包 否则不生效-->
+    <!-- 查询TOP3景点信息 -->
+    <select id="findTop3" resultMap="spotsRM">
+               SELECT s.*,spf.imgurl imgurl,spf.trading_valume,spf.click_valume
+            from spots_p s,(
+                select sp.*,f.trading_valume,f.click_valume
+            from flow_p f,
+              (select s.spots_id,p.imgurl
+                  from pictures_p p,spots_picture_p s
+                  where p.picture_id = s.picture_id) sp
+                  where sp.spots_id = f.spots_id
+            )spf
+            where s.spots_id = spf.spots_id
+					GROUP BY spots_name
+          order by click_valume desc
+					limit 0,3
+    </select>
+    <!--获取全部景点（前面只做了名字的提取）-->
+    <select id="findAll" resultType="Spots">
+        select spots_id,spots_name from spots_p limit #{n},16
+    </select>
+
+    <!--获取全部的景点信息及其图片-->
+    <select id="findAll6" resultMap="spotsRM">
+        SELECT s.*,spf.imgurl imgurl,spf.trading_valume,spf.click_valume
+            from spots_p s,(
+                select sp.*,f.trading_valume,f.click_valume
+            from flow_p f,
+              (select s.spots_id,p.imgurl
+                  from pictures_p p,spots_picture_p s
+                  where p.picture_id = s.picture_id) sp
+                  where sp.spots_id = f.spots_id
+            )spf
+            where s.spots_id = spf.spots_id
+					GROUP BY spots_name
+          order by click_valume desc
+					limit #{n},6
+    </select>
+    <resultMap id="spotsRM" type="Spots" autoMapping="true">
+        <id column="spots_id" property="spotsId"></id>
+        <collection property="pictureList" ofType="Picture">
+            <id column="picture_id" property="pictureId"></id>
+            <result column="imgurl" property="imgurl"></result>
+            <result column="state" property="state"></result>
+            <result column="order_no" property="orderNo"></result>
+            <result column="remark" property="remark"></result>
+        </collection>
+    </resultMap>
+
+</mapper>

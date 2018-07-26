@@ -1,0 +1,150 @@
+@charset utf-8;
+
+/*基础操作的按钮容器*/
+.buts{
+	display: block;
+	margin: 5px auto;
+	padding: 0 auto;
+	text-align: center; 
+	width: 100%;
+	height: 30px;
+	/*background-color: red;*/
+}
+/*按钮栏*/
+.buts button {
+	margin-left:10px;
+	padding-top:0; 
+	padding-left: 0;
+	display: inline-block;
+	width: 120px;
+	height:30px;
+	font-size: 16px;
+	letter-spacing: 10px;
+	line-height: 15px;
+	text-align: center;
+}
+.buts button a {
+	margin-top: 0 auto;
+	display: block;
+	width: 120px;
+	height: 30px;
+	line-height: 30px;
+	color: white;
+}
+.buts button a:hover {
+	color: #34aadc;
+}
+/*基础操作的列表*/
+.tableBody{
+	display: block;
+	width: 100%;
+	margin: 10px auto;
+	
+	/*background-color: red; */
+	padding: 0 auto;
+}
+.fixed {
+	height: 500px;
+	/*设置自适应滚动条*/
+	overflow: auto;
+}
+/*表格对象*/
+.table {
+	display: block;
+	width: 100%;
+	margin: 0 auto;
+}
+.table input {
+	margin-left: 10px;
+}
+.table th {
+	width: 4%;
+}
+.table th+th {
+	width: 10%;
+}
+.table tr:hover {
+	color: red;
+}
+
+/*用于查看的表格的样式*/
+.tableView {
+	display: block;
+	width: 100%;
+	margin: 0 auto; 
+}
+.tableView td {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	width: 10%;
+	height: 30px;
+	font-size: 15px;
+	vertical-align: baseline;
+	line-height: 30px;
+}
+/*查看表格的自定义的行样式*/
+.singleRow {
+	background-color: rgb(249, 249, 249);
+}
+.dubleRow {
+	background-color: rgb(245, 245, 245);
+}
+/*让元素右浮动*/
+.right {
+	float: right;
+	margin-right: 100px;
+}
+
+
+
+/*表名标签*/
+.panel-heading{
+	display: block;
+	width: 100%;
+	text-align: center;
+}
+
+
+/*创建区域按钮样式*/
+.addButs{
+	width: 120px;
+	letter-spacing: 10px;
+}
+
+/*标题2*/
+.title2 {
+	font-size: 25px;
+	letter-spacing: 10px;
+}
+
+
+/* 留言板的查看页面的表格样式*/
+.tableViewDiscuss {
+	display: block;
+	width: 100%;
+	/*background-color: blue;*/
+	margin: 20px auto;
+}
+.tableViewDiscuss th:first {
+	text-align: right;
+}
+.tableViewDiscuss th {
+	width: 25%;
+}
+.tableViewDiscuss thead {
+	background-color: rgb(249, 249, 249);
+}
+
+
+/*中间表的样式*/
+.scButs {
+	display: block;
+	width:100%;
+	margin-top: 20px;
+	overflow: hidden;
+
+}
+.scForms {
+	display: block;
+	width:100%;
+}

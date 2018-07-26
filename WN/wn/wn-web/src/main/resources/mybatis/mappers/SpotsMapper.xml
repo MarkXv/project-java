@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wn.web.mapper.SpotsMapper">
+
+    <!-- 查询TOP3景点信息 -->
+    <select id="findTop3" resultType="Spots">
+        select * from spots_p  order by spots_id limit 1,3
+    </select>
+
+    <!--获取全部景点（前面只做了名字的提取）-->
+    <select id="findSimpAll" resultType="Spots">
+        select spots_id,spots_name from spots_p limit #{n},16
+    </select>
+
+    <!--获取全部的景点信息及其图片-->
+    <select id="findAll6" resultMap="spotsRM6">
+        SELECT *
+        from spots_p s,(
+                select sp.*,f.trading_valume,f.click_valume
+            from flow_p f,
+              (select s.spots_id,p.imgurl
+                  from pictures_p p,spots_picture_p s
+                  where p.picture_id = s.picture_id) sp
+                  where sp.spots_id = f.spots_id
+            )spf
+            where s.spots_id = spf.spots_id
+					GROUP BY spots_name
+          order by click_valume desc
+					limit #{n},6
+    </select>
+    <resultMap id="spotsRM6" type="Spots" autoMapping="true">
+        <id column="spots_id" property="spotsId"></id>
+        <association property="flow" javaType="Flow">
+            <id column="spots_id" property="spotsId"></id>
+            <result column="click_valume" property="clickValume"></result>
+            <result column="trading_valume" property="tradingValume"></result>
+        </association>
+        <collection property="pictureList" ofType="Picture">
+            <id column="picture_id" property="pictureId"></id>
+            <result column="imgurl" property="imgurl"></result>
+        </collection>
+    </resultMap>
+
+    <sql id="findAllSQL">
+        SELECT
+        spfs.*, sc.category_id,
+        sc.category_name
+        FROM
+        (
+        SELECT
+        sp.spots_id,
+        cp.category_name,
+        cp.category_id
+        FROM
+        category_p cp,
+        spots_category_p sp
+        WHERE
+        cp.category_id = sp.category_id
+        ) sc  LEFT JOIN(
+        SELECT
+        s.*, spf.imgurl,
+        spf.picture_id,
+        spf.trading_valume,
+        spf.click_valume,
+        spf.city
+        FROM
+        spots_p s LEFT JOIN
+        (
+        SELECT
+        sp.*, f.trading_valume,
+        f.click_valume,f.city
+        FROM
+        flow_p f LEFT JOIN
+        (
+        SELECT
+        s.spots_id,
+        p.picture_id,
+        p.imgurl
+        FROM
+        pictures_p p LEFT JOIN
+        spots_picture_p s
+        on
+        p.picture_id = s.picture_id
+        ) sp
+        ON
+        sp.spots_id = f.spots_id
+        ) spf
+        on
+        s.spots_id = spf.spots_id
+        ) spfs
+        on
+        sc.spots_id = spfs.spots_id
+    </sql>
+
+    <select id="findAll" resultType="Spots" resultMap="spotsRM">
+        <include refid="findAllSQL"></include>
+    </select>
+
+    <select id="findAllWithCondition" resultMap="spotsRM">
+        <include refid="findAllSQL"></include>
+        <where>
+            <if test="spotsName!=null">spots_name like '%${spotsName}%'</if>
+            <if test="ticketPrice!=null">and ticket_price like '%${ticketPrice}%'</if>
+            <if test="category.categoryName!=null">and category_name like '%${category.categoryName}%'</if>
+            <if test="openTime!=null">and open_time like '%${openTime}%'</if>
+            <if test="remark!=null">and remark like '%${remark}%'</if>
+
+            <if test="telephone!=null">and telephone = #{telephone}</if>
+            <if test="longitude!=null">and longitude = #{longitude}</if>
+            <if test="latitude!=null">and latitude = #{latitude}</if>
+            <if test="traffic!=null">and traffic = %${traffic}%</if>
+            <if test="station!=null">and station = %${station}%</if>
+            <if test="orderNo!=null">and order_no = #{orderNo}</if>
+            <if test="addr!=null">and addr = #{addr}</if>
+            <if test="state!=null">and state = #{state}</if>
+            <if test="createBy!=null">and create_by = #{createBy}</if>
+            <if test="createTime!=null">and create_time = #{createTime}</if>
+            <if test="updateBy!=null">and update_by = #{updateBy}</if>
+            <if test="updateTime!=null">and update_time = #{updateTime}</if>
+        </where>
+    </select>
+
+    <resultMap id="spotsRM" type="Spots" autoMapping="true">
+        <id column="spots_id" property="spotsId"></id>
+        <association property="category" javaType="Category">
+            <id column="category_id" property="categoryId"></id>
+            <result column="category_name" property="categoryName"></result>
+        </association>
+        <association property="flow" javaType="Flow">
+            <id column="spots_id" property="spotsId"></id>
+            <result column="city" property="city"></result>
+            <result column="click_valume" property="clickValume"></result>
+            <result column="trading_valume" property="tradingValume"></result>
+        </association>
+        <collection property="pictureList" ofType="Picture">
+            <id column="picture_id" property="pictureId"></id>
+            <result column="imgurl" property="imgurl"></result>
+        </collection>
+    </resultMap>
+
+    <!-- 根据spotId查询对应的景点信息 -->
+    <select id="findSpotsById" resultMap="spotsRM">
+        SELECT
+            spfs.*, sc.category_id,
+            sc.category_name
+        FROM
+            (
+                SELECT
+                    sp.spots_id,
+                    cp.category_name,
+                    cp.category_id
+                FROM
+                    category_p cp,
+                    spots_category_p sp
+                WHERE
+                    cp.category_id = sp.category_id
+            ) sc  LEFT JOIN(
+                SELECT
+                    s.*, spf.imgurl,
+                    spf.picture_id,
+                    spf.trading_valume,
+                    spf.click_valume,
+										spf.city
+                FROM
+                    spots_p s LEFT JOIN
+                    (
+                        SELECT
+                            sp.*, f.trading_valume,
+                            f.click_valume,f.city
+                        FROM
+                            flow_p f LEFT JOIN
+                            (
+                                SELECT
+                                    s.spots_id,
+                                    p.picture_id,
+                                    p.imgurl
+                                FROM
+                                    pictures_p p LEFT JOIN
+                                    spots_picture_p s
+                                on
+                                    p.picture_id = s.picture_id
+                            ) sp
+                        ON
+                            sp.spots_id = f.spots_id
+                    ) spf
+                on
+                    s.spots_id = spf.spots_id
+            ) spfs
+        on
+            sc.spots_id = spfs.spots_id
+        WHERE  sc.spots_id = #{spotsId}
+    </select>
+
+    <!--分页查询-->
+    <select id="findByPage" resultMap="spotsRMP">
+        SELECT s.*,spf.imgurl imgurl,spf.trading_valume,spf.click_valume
+        from spots_p s,(
+        select sp.*,f.trading_valume,f.click_valume
+        from flow_p f,
+        (select s.spots_id,p.imgurl
+        from pictures_p p,spots_picture_p s
+        where p.picture_id = s.picture_id) sp
+        where sp.spots_id = f.spots_id
+        )spf
+        where s.spots_id = spf.spots_id
+        GROUP BY spots_name
+        order by click_valume desc
+        limit #{n},9
+    </select>
+
+    <resultMap id="spotsRMP" type="Spots" autoMapping="true">
+        <id column="spots_id" property="spotsId"></id>
+        <collection property="pictureList" ofType="Picture">
+            <id column="picture_id" property="pictureId"></id>
+            <result column="imgurl" property="imgurl"></result>
+            <result column="state" property="state"></result>
+            <result column="order_no" property="orderNo"></result>
+            <result column="remark" property="remark"></result>
+        </collection>
+    </resultMap>
+
+    <!--景点的保存-->
+    <insert id="saveSpots">
+        INSERT INTO spots_p VALUES (
+        #{spotsId},
+        #{spotsName},
+        #{ticketPrice},
+        #{remark},
+        #{telephone},
+        #{longitude},
+        #{latitude},
+        #{traffic},
+        #{station},
+        #{orderNo},
+        #{openTime},
+        #{addr},
+        #{state},
+        #{createBy,jdbcType=VARCHAR},
+        #{createTime,jdbcType=DATE},
+        #{updateBy,jdbcType=VARCHAR},
+        #{updateTime,jdbcType=DATE})
+    </insert>
+
+    <!--保存景点信息关联表-->
+    <insert id="saveSpotsPicture">
+        INSERT  INTO spots_picture_p VALUES (
+          #{spotsId},
+          #{pictureId} )
+    </insert>
+
+    <!--保存景点流量表-->
+    <insert id="saveFlow">
+        INSERT INTO flow_p VALUES (
+        #{spotsId},
+        #{sportName},
+        #{city},
+        #{clickValume},
+        #{tradingValume},
+        #{createBy,jdbcType=VARCHAR},
+        #{createTime,jdbcType=DATE},
+        #{updateBy,jdbcType=VARCHAR},
+        #{updateTime,jdbcType=DATE})
+    </insert>
+    <!--<if test="spotsId">spots_id=#{spotsId},</if>
+              <if test="sportName">sport_name=#{sportName},</if>
+              <if test="city">city=#{city},</if>
+              <if test="clickValume">click_valume=#{clickValume},</if>
+              <if test="tradingValume">trading_valume=#{tradingValume},</if>-->
+    <!--修改景点状态-->
+    <update id="updateSpots">
+        UPDATE spots_p
+        <set>
+            <if test="spotsName!=null">spots_name= #{spotsName},</if>
+            <if test="ticketPrice!=null">ticket_price= #{ticketPrice},</if>
+            <if test="remark!=null">remark= #{remark},</if>
+            <if test="telephone!=null">telephone= #{telephone},</if>
+            <if test="longitude!=null">longitude= #{longitude},</if>
+            <if test="latitude!=null">latitude= #{latitude},</if>
+            <if test="traffic!=null">traffic= #{traffic},</if>
+            <if test="station!=null">station= #{station},</if>
+            <if test="orderNo!=null">order_no= #{orderNo},</if>
+            <if test="openTime!=null">open_time= #{openTime},</if>
+            <if test="addr!=null">addr= #{addr},</if>
+            <if test="state!=null">state= #{state},</if>
+            <if test="createBy!=null">create_by= #{createBy},</if>
+            <if test="createTime!=null">create_time= #{createTime},</if>
+            <if test="updateBy!=null">update_by= #{updateBy},</if>
+            <if test="updateTime!=null">update_time= #{updateTime},</if>
+        </set>
+        WHERE spots_id= #{spotsId}
+    </update>
+
+    <!--修改景点状态-->
+    <update id="updateState">
+        UPDATE spots_p SET state=#{state} WHERE spots_id=#{spotsId}
+    </update>
+
+    <!--修改景点图片关联表-->
+    <update id="updateSpotsPicture">
+        UPDATE spots_picture_p SET picture_id=#{pictureId} WHERE spots_id=#{spotsId}
+    </update>
+
+    <!--删除景点信息表-->
+    <delete id="deleteSpots">
+        DELETE FROM spots_p WHERE spots_id=#{spotsId}
+    </delete>
+
+    <!--删除景点图片关联信息-->
+    <delete id="deleteSpotsPicture">
+        DELETE FROM spots_picture_p WHERE spots_id=#{spotsId}
+    </delete>
+
+    <!--删除景点流量信息-->
+    <delete id="deleteFlow">
+        DELETE FROM flow_p WHERE spots_id=#{spotsId}
+    </delete>
+
+    <select id="spotToolList" resultType="com.wn.common.pojo.SpotTool">
+        select c.category_name,sum_spots
+        from category_p c,(
+        select
+        category_id,
+        COUNT(*) sum_spots
+        from
+        spots_category_p
+        group by
+        category_id
+        ) sc
+        where
+        c.category_id = sc.category_id
+    </select>
+
+    <select id="spotsList" resultType="Spots">
+        select  f.spots_name,f.click_valume from flow_p f
+    </select>
+    
+    <update id="updataClickValue">
+        update flow_p set click_valume = #{clickValue} where spots_id=#{spotsId}
+    </update>
+</mapper>

@@ -1,0 +1,139 @@
+@charset utf-8;
+
+/*TOP模块的标题*/
+#TOP3{
+	margin-top:58px;
+	display: block;
+	margin-bottom: 5px; 
+}
+/*TOP3模块的副标题(小标题)*/
+#TOP3_p {
+	margin-bottom: 10px;
+	height: 10px;
+}
+
+/*装每个景点的外部容器*/
+.top3Container{
+	width:300px;
+	height: 200px;
+	/*background-color: red;*/
+	margin-top: 0px;
+	padding-top: 0px;
+	display: inline-block;
+	text-align: center;
+
+}
+/*前三景点的超链接*/
+.top3Container>a{
+	text-decoration: none;
+}		
+/*前三景点下的名称样式*/
+.TOP3_p{
+	margin: 0 auto;
+	font-size: 20px;
+	color: white;
+	display: block;
+}
+.input-group{
+	margin-top: 10px;
+}
+/*全部景点的最外部container*/
+#allSitesContainer{
+	display: block;
+	margin: 0 auto;
+	text-align: center;
+	padding: 0 auto;
+}
+
+/*全部景点的列表容器*/
+#AllSitesList_div{
+	margin: 10 auto;
+	width: 80%;
+	height: 180px;
+	text-align: center;
+	display: block;
+	padding: 0 auto;
+}
+/*所有景点的UL*/
+.AllSiteUl{
+	margin:0 auto;
+	list-style-type: none;
+	/*background-color: blue;*/
+	display: block;
+	float: right;
+}
+.AllSiteUl > li {
+	display: inline-block;
+	width: 20%;
+	height: 15px;
+	margin: 5px 15px;
+	font-size: 20px;
+	color: #5482ab;
+	/*background-color: red;*/
+}
+
+/*首页顶部留言模块留言列表容器*/
+#topDiscuss_Div{
+	display: block;
+	width: 90%;
+	float: left;
+	text-align: left;
+	padding-top: 0;
+	padding-left: 0px;
+
+}
+#topDiscuss_Div p {
+	margin-top: 0px;
+	color: black;
+	font-size: 15px;
+	float: left;
+	display: block;
+	width: 100%;
+}
+#topDiscuss_Div ul {
+	
+	list-style-type: none;
+	padding-left: 0px;
+}
+#topDiscuss_Div ul li {
+	margin-left: 2px;
+}
+
+/*查看所有按钮*/
+#toAllBut{
+	display: block;
+	margin:10px auto;
+	padding-top: 0px;
+	width: 200px;
+	height: 40px;
+	font-size: 20px;
+	text-align: center;
+	color: white;
+	line-height: 40px;
+	text-decoration: none;
+	margin-bottom: 50px;
+}
+
+/*重写div高度*/
+.col-md-4.col1  {
+	height:400px;
+}
+.col-md-4.col1 img {
+	width: 400px;
+	height:200px;
+}
+
+
+	/*按钮动画 */
+	a.button {
+		-webkit-animation-duration: 2s;
+		-webkit-animation-iteration-count: infinite; 
+	}
+
+@-webkit-keyframes bluePulse {
+	  from { background-color: #255680; -webkit-box-shadow: 0 0 9px #333; }
+	  50% { background-color: #4295db; -webkit-box-shadow: 0 0 18px #4295db; }
+	  to { background-color: #255680; -webkit-box-shadow: 0 0 9px #333; }
+	}
+
+.blue.button { -webkit-animation-name: bluePulse; -webkit-animation-duration: 2s; }

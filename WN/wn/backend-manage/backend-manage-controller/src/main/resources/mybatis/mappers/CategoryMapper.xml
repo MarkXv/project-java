@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wn.backend.manage.mapper.CategoryMapper">
+    <!--查找所有的类别信息-->
+    <select id="findAll" resultType="Category">
+        SELECT * FROM category_p
+    </select>
+
+    <!--根据景点查找对应类别-->
+
+
+    <!--根据id查找对应的类别-->
+    <select id="findCategoryById" resultType="Category">
+        SELECT * FROM category_p WHERE category_id=#{categoryId}
+    </select>
+
+    <!--保存类别表-->
+    <insert id="saveCategory">
+        INSERT  INTO category_p VALUES (
+            #{categoryId},
+            #{categoryName},
+            #{orderNo},
+            #{state},
+            #{createBy,jdbcType=VARCHAR},
+            #{createTime,jdbcType=DATE},
+            #{updateBy,jdbcType=VARCHAR},
+            #{updateTime,jdbcType=DATE})
+    </insert>
+
+    <!--保存景点类别信息表-->
+    <insert id="saveSpotsCategory">
+        INSERT INTO spots_category_p VALUES (
+        #{spotsId},
+        #{categoryId})
+    </insert>
+
+    <!--修改状态-->
+    <update id="updateState">
+        UPDATE category_p set state=#{state} WHERE category_id=#{categoryId}
+    </update>
+
+    <!--更新类别表-->
+    <update id="updateCategory">
+        UPDATE category_p
+        <set>
+            <if test="categoryName">category_name=#{categoryName},</if>
+            <if test="orderNo">order_no=#{orderNo},</if>
+            <if test="createBy!=null">create_by= #{createBy},</if>
+            <if test="createTime!=null">create_time= #{createTime},</if>
+            <if test="updateBy!=null">update_by= #{updateBy},</if>
+            <if test="updateTime!=null">update_time= #{updateTime},</if>
+        </set>
+        WHERE category_id=#{categoryId}
+    </update>
+
+    <!--更新景点类别信息-->
+    <update id="updateSpotsCategory">
+        UPDATE spots_category_p
+        SET <if test="categoryId!=null">category_id=#{categoryId}</if>
+        WHERE spots_id=#{spotsId}
+    </update>
+
+    <!--删除类别表-->
+    <delete id="deleteCategory">
+        DELETE FROM category_p WHERE category_id=#{categoryId}
+    </delete>
+
+    <!--删除景点类别关联表-->
+    <delete id="deleteSpotsCategory">
+        DELETE FROM spots_category_p WHERE spots_id=#{spotsId}
+    </delete>
+
+    <delete id="deleteCategorySpots">
+        DELETE FROM spots_category_p WHERE category_id=#{categoryId}
+    </delete>
+</mapper>

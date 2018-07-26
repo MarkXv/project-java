@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.tedu.springBoot.mapper.ModuleMapper">
+
+    <!--查询全部的模块信息-->
+    <select id="findAllModule" resultMap="moduleRM">
+        select
+            m.*, p.module_id p_id,
+            p. name p_name
+        from
+            module_p m
+        left join module_p p on m.parent_id = p.module_id
+    </select>
+
+    <resultMap id="moduleRM" type="Module" autoMapping="true">
+        <id column="module_id" property="moduleId"/>
+        <association property="parentModule" javaType="Module">
+            <id column="p_id" property="moduleId"/>
+            <result column="p_name" property="name"/>
+        </association>
+    </resultMap>
+
+    <!--通过模块id查询模块信息-->
+    <select id="findModuleById" resultMap="moduleRM">
+        select
+            *
+        from
+            (
+                select
+                    m.*, p.module_id p_id,
+                    p. name p_name
+                from
+                    module_p m
+                left join module_p p on m.parent_id = p.module_id
+            ) p
+        where
+            p.module_id = #{moduleid}
+    </select>
+
+    <select id="findModuleExpId" resultType="Module">
+          SELECT * FROM module_p WHERE module_id not in (#{moduleId})
+    </select>
+
+    <insert id="saveModule">
+        insert into module_p values(
+            #{moduleId},
+            #{parentModule.moduleId,jdbcType=VARCHAR},
+            #{name,jdbcType=VARCHAR},
+            #{ctype,jdbcType=VARCHAR},
+            #{state,jdbcType=INTEGER},
+            #{orderNo,jdbcType=INTEGER},
+            #{remark,jdbcType=VARCHAR},
+            #{createBy,jdbcType=VARCHAR},
+			#{createTime,jdbcType=DATE},
+			#{updateBy,jdbcType=VARCHAR},
+			#{updateTime,jdbcType=DATE}
+        )
+    </insert>
+
+
+
+        <delete id="deleteModule">
+            delete from module_p where module_id in (
+            <foreach collection="array" item="id" separator=",">
+                #{id}
+            </foreach>
+            )
+        </delete>
+
+
+
+        <update id="updateModule">
+            update module_p
+            <set>
+                <if test="parentModule.moduleId!=null">parent_id=#{parentModule.moduleId},</if>
+                <if test="name!=null">name=#{name},</if>
+                <if test="ctype!=null">ctype=#{ctype},</if>
+                <if test="state!=null">state=#{state},</if>
+                <if test="orderNo!=null">order_no=#{orderNo},</if>
+                <if test="remark!=null">remark=#{remark},</if>
+                <if test="createTime!=null">create_time=#{createTime},</if>
+                <if test="createBy!=null">create_by=#{createBy},</if>
+                <if test="updateTime!=null">update_time=#{updateTime},</if>
+                <if test="updateBy!=null">update_by=#{updateBy},</if>
+            </set>
+            where module_id=#{moduleId}
+
+        </update>
+
+        <update id="updateState" >
+            update module_p set state=#{state} where module_id in (
+            <foreach collection="moduleIds" item="id" separator=",">
+                #{id}
+            </foreach>
+            )
+        </update>
+
+</mapper>

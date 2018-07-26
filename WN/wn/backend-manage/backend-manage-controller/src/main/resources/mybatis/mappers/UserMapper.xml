@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wn.backend.manage.mapper.UserMapper">
+    <!--配置别名包 否则不生效-->
+
+    <select id="findAllList" resultMap="userRM">
+        select * from user_p ,user_info_p
+        where user_p.user_id=user_info_p.user_info_id
+    </select>
+
+    <delete id="deleteUser">
+        delete from user_p where user_id in (
+            <foreach collection="userIds" item="id" separator=",">
+                #{id}
+            </foreach>
+        )
+    </delete>
+
+    <update id="updateState" >
+        update user_p set state=#{state} where user_id in (
+        <foreach collection="userIds" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
+    </update>
+
+
+    <insert id="saveUser" >
+        insert into user_p values(
+            #{userId},
+            #{username},
+            #{password},
+            #{orderNo},
+            #{state},
+            #{createTime,jdbcType=DATE},
+            #{createBy,jdbcType=VARCHAR},
+            #{updateTime,jdbcType=DATE},
+            #{updateBy,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="viewUser" resultMap="userRM">
+            select * from user_p p
+            			LEFT JOIN
+            (select * from user_info_p) info
+            			on p.user_id = info.user_info_id
+            where user_id = #{userId}
+
+    </select>
+
+    <!--根据用户id查找对应的角色-->
+    <select id="finduRoleList" resultType="String">
+        SELECT
+                role_id
+        FROM
+              role_user_p
+
+        WHERE
+            user_id = #{userId}
+    </select>
+
+    <!-- 封装userInfo对象 -->
+    <resultMap id="userRM" type="User" autoMapping="true">
+        <id column="user_id" property="userId" />
+
+        <!--封装UserInfo-->
+        <association property="userInfo" javaType="UserInfo" resultMap="UserIRM"></association>
+
+        <!--封装角色-->
+        <!--<collection property="roleList" ofType="Role">
+            <id column="role_id" property="roleId"></id>
+            <result column="name" property="name"></result>
+        </collection>-->
+    </resultMap>
+    <resultMap id="UserIRM" type="UserInfo" autoMapping="true">
+        <id column="user_info_id" property="userInfoId" />
+    </resultMap>
+
+
+
+    <update id="updateUser">
+        update user_p
+        <set>
+            <if test="username!=null">username=#{username},</if>
+            <if test="password!=null">password=#{password},</if>
+            <if test="orderNo!=null">order_no=#{orderNo},</if>
+            <if test="state!=null">state=#{state},</if>
+            <if test="createTime!=null">create_time=#{createTime},</if>
+            <if test="createBy!=null">create_time=#{createBy},</if>
+            <if test="updateTime!=null">update_time=#{updateTime},</if>
+            <if test="updateBy!=null">update_bye=#{updateBy}</if>
+       </set>
+        where user_id=#{userId}
+
+    </update>
+
+    <!--根据userID删除对应的角色信息-->
+    <delete id="deleteUserRole">
+        DELETE FROM role_user_p WHERE user_id=#{userId}
+    </delete>
+
+    <!--根据userId保存对应的角色信息-->
+    <insert id="saveUserRole">
+        INSERT INTO role_user_p VALUES
+         (
+              #{roleId},
+              #{userId}
+         )
+    </insert>
+
+    <!--根据用户名查找用户对象-->
+    <select id="findUserByName" resultType="User">
+        select * from user_p where username = #{username}
+    </select>
+
+    <!--根据用户id查找对应的用户的权限-->
+    <select id="findPrililegeInfoList" resultType="string">
+        select name from module_p where module_id in(
+        select module_id from role_module_p
+        where role_id in (
+        select role_id from role_user_p
+        where user_id = #{userId}
+        )
+        )
+
+    </select>
+
+</mapper>
